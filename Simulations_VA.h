@@ -70,6 +70,7 @@ double MAX(const double& A, const double& B);
 double Frequence(const std::vector<double>& vect, double s);
 
 
+
 //void Gain_cumule(std::vector<double> x, int nb, double x0, double sa, double sb, double p);
 //void M_C_Gain_cumule(std::vector<double> x, int nb, int nb_mc, double x0, double sa, double sb, double p);
 //void M_C_Gain_cumule_Max(std::vector<double> x, int nb, int nb_mc, int maxx, double x0, double sa, double sb, double p);

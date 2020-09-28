@@ -6,6 +6,7 @@
 #include "Simulation.h"
 //std::vector<double> PoissonProcess::simulPath(const int& y) const { return std::vector<double>(y); }
 //PoissonProcess::PoissonProcess(double a) : ProcessSimulable(), m_intensity(a) {}
+
 double sumSubArray(const std::vector<double>& data, const int& start, const int& stop)
 {
     double res = data[start];
