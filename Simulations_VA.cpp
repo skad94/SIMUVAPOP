@@ -5,8 +5,7 @@
 #include<iostream>
 #include "Simulation.h"
 //std::vector<double> PoissonProcess::simulPath(const int& y) const { return std::vector<double>(y); }
-//PoissonProcess::PoissonProcess(double a) : ProcessSimulable(), m_intensity(a) {}
-
+//PoissonProcess::PoissonProcess(double a) : continuousProcessSimulable(), m_intensity(a) {}
 double sumSubArray(const std::vector<double>& data, const int& start, const int& stop)
 {
     double res = data[start];
@@ -14,18 +13,18 @@ double sumSubArray(const std::vector<double>& data, const int& start, const int&
         res += data[i];
     return res;
 }
-double 
+double
 unif()
 {
     // return [0,1] uniform realisation
     return rand() / (RAND_MAX + 1.0);
 }
-ProcessSimulable::ProcessSimulable()
+continuousProcessSimulable::continuousProcessSimulable()
     :m_start(0.), m_drift(0.), m_diffusion(0.)
 {}
 
-std::vector<double> 
-ProcessSimulable::fillPath(const std::vector<double>& data, const size_t& finalSize) const
+std::vector<double>
+continuousProcessSimulable::fillPath(const std::vector<double>& data, const size_t& finalSize) const
 {
     //in order to generate a finalSize's length vector from data.
     // linear interpolation between points in data
@@ -42,10 +41,10 @@ ProcessSimulable::fillPath(const std::vector<double>& data, const size_t& finalS
 }
 
 std::vector<double>
-ProcessSimulable::Simul_Brownian(const int& sizeSample, double mu, double sigma) const
+continuousProcessSimulable::Simul_Brownian(const int& sizeSample, double mu, double sigma) const
 {
     ///Return a Brownian path with possible drift (mu) and diffusion coefficient (sigma)
-    std::vector<double> W(sizeSample,0.); // brownian
+    std::vector<double> W(sizeSample, 0.); // brownian
     /// Sample normal centered and reduced via box Muller method
     for (int i = 1; i < sizeSample; ++i)
     {
@@ -57,7 +56,7 @@ ProcessSimulable::Simul_Brownian(const int& sizeSample, double mu, double sigma)
 }
 
 //std::vector<double> 
-//ProcessSimulable::simulPath(const int& sizeSample) const
+//continuousProcessSimulable::simulPath(const int& sizeSample) const
 //{
 //    std::vector<double> brownianPath = this->Simul_Brownian(sizeSample);
 //    return this->SimulPath(sizeSample,brownianPath);
@@ -68,13 +67,13 @@ PoissonProcess::PoissonProcess(double intensity)
 {
 }
 
-std::vector<double> 
+std::vector<double>
 PoissonProcess::simulPath(const int& eventAmount) const
 {
     {///simulations des temps d'un processus de Poisson simple jusqu' a un nombre d'evenements donnée
         std::vector<double> res(eventAmount, 0);
         res[0] = 0;
-        for (int i = 0; i < eventAmount -1; i++)
+        for (int i = 0; i < eventAmount - 1; i++)
         {
             //tau = -log(unif()) / m_intensity; ///inter-arrivé exponentielle
             res.at(i + 1) = res[i] - log(unif()) / m_intensity;// exponential
@@ -100,7 +99,7 @@ BS_Process::simulPath(const int& sizeSample) const
 std::vector<double> BS_Process::BS_Simul_Euler(const int& sizeSample) const
 {
     /// Black & Scholes log Normal paths
-    /// Euler Scheme pour la discrétisation du schéma et les browniens sont obtenus avec Box-mller et incréments gaussiens
+    /// Euler Scheme pour la discrétisation du schéma et les browniens sont obtenus avec Box-Muller et incréments gaussiens
     std::vector<double> B = this->Simul_Brownian(sizeSample);
     std::vector<double> S(sizeSample);
     double dt = 1.0 / (sizeSample + 0.0);
@@ -144,13 +143,13 @@ std::vector<double> BS_Process::BS_Simul_Euler(const int& sizeSample, const std:
     }
     return S;
 }
-std::vector<double> 
+std::vector<double>
 BS_Process::BS_Simul_milstein(const int& sizeSample) const
 {
     std::vector<double> B = this->Simul_Brownian(sizeSample);
     return BS_Simul_milstein(sizeSample, B);
 }
-std::vector<double> 
+std::vector<double>
 BS_Process::BS_Simul_milstein(const int& sizeSample, const std::vector<double>& brownianPath) const
 {
     /// Simulation d'une solution de l'EDS de B&S (loi log normale)
@@ -186,7 +185,7 @@ BS_Process::BS_Simul_milstein(const int& sizeSample, const std::vector<double>& 
     return S;
 }
 
-void 
+void
 Simul_Sample(std::vector<double> val, int size_sample, double sd, double su, double p)
 {
     int i;
@@ -206,8 +205,8 @@ Simul_Sample(std::vector<double> val, int size_sample, double sd, double su, dou
     }
 }
 
-void 
-display(const std::vector<double> &vect)
+void
+display(const std::vector<double>& vect)
 {
     for (size_t i = 0; i < vect.size(); i++)
     {
@@ -218,7 +217,7 @@ double MAX(const double& A, const double& B)
 {
     if (A < B)
         return B;
-    else 
+    else
         return A;
 }
 
@@ -233,16 +232,16 @@ double Frequence(const std::vector<double>& vect, double s)
             freq++;
         }
     }
-    freq = freq  / (vect.size() + 0.0);
+    freq = freq / (vect.size() + 0.0);
     std::cout << "frequence de " << s << " = " << freq << std::endl;
     return freq;
 }
 
-std::vector<double> 
+std::vector<double>
 Markov_chain_3(int pathSize, int origin, double p11, double p12, double p22, double p23, double p33, double p31)
 {
     // 3 States Markov chain with input transition probabilities
-    std::vector<double> state(origin,pathSize);
+    std::vector<double> state(origin, pathSize);
     for (int i = 1; i < pathSize + 1; i++)
     {
         double u = rand() / (RAND_MAX + 1.0);
@@ -437,22 +436,7 @@ std::vector<double> Simul_Brownien(int nb, double mu, double sigma) {
 //    }
 //    return t;
 //}
-std::vector<double> Proc_O_U_Simul(int nb, double origine, double moyenne, double diffusion, double speed_retour)
-{
-    /// Simulation d'un processus Orstein-Uhlenbeck
-    /// Bon pour observer le retour à la moyenne, faire du monte-carlo sur les taux
-    std::vector<double> B(nb);
-    std::vector<double> X(nb);
-    B = Simul_Brownien(nb, 0, 1);
-    X[0] = origine;
-    std::cout << X[0] << std::endl;
-    for (int i = 1; i < nb; i++)
-    {
-        X[i] = X[i - 1] - speed_retour * (X[i - 1] - moyenne) * (1.0 / (nb + 0.0)) + diffusion * (B[i] - B[i - 1]);
-        std::cout << X[i] << std::endl;
-    }
-    return X;
-}
+
 std::vector<double> Proc_CIR_Simul(int nb, double origine, double moyenne, double diffusion, double speed_retour)
 {   /// Simulation d'un processus CIR
     /// Bon pour observer le retour la positivité des taux ssi sigma^2<2*k*theta, n'hésite pas a faire du monte-carlo en moyennant les sorties de ce truc
@@ -491,11 +475,9 @@ std::vector<double> Proc_pseudo_CEV(int nb, double origine, double moyenne, doub
 }
 double sd_hat(std::vector<double> X, int n)
 {
-    /// Calcul de l'estimateur empirique de la variance
-
+    /// Compute empirical unbiased estimator
     double tmp_moyenne(0);
     double res(0);
-    //  std::cout << " debut de std " << res << std::endl;
 
     for (int i = 0; i < n; i++)
     {
@@ -542,8 +524,6 @@ int TVI(std::vector<double> t, int taille, double e)
     tmp = taille / 2;
     while (/*inf<sup ||*/ abs(sort_tab[tmp] - e) > 0.5)
     {
-        //std::cout << " dans le while " <<std::endl;
-
         if (e <= sort_tab[tmp])
         {
             sup = tmp;
@@ -556,7 +536,6 @@ int TVI(std::vector<double> t, int taille, double e)
         }
 
     }
-    // std::cout << "la plus proche valeur de " << e << " est " << sort_tab[tmp] << " atteint en " << tmp << std::endl;
     return tmp;
 }
 //double * Call_PCEV_MC(int nb_MC,int nb, double origine, double moyenne, double nu, double puissance)
@@ -574,15 +553,11 @@ int TVI(std::vector<double> t, int taille, double e)
 
 double f(double x, double lambda)
 {
-    double res;
-    res = exp(x * lambda);
-    return res;
+    return exp(x * lambda);
 }
 double h(double x)
 {
-    double res;
-    res = 5 * sqrt(1 + x);
-    return res;
+    return 5 * sqrt(1 + x);
 }
 
 //void Call_BS_MC(int nb_MC, int nb_pas, double spot, double mu, double diffusion, double K)
@@ -617,4 +592,29 @@ double h(double x)
 //    std::cout << " Intervalle de confiance a 5% : " << tmpm << " ; " << tmpp << std::endl;
 //}
 
+std::vector<double> vasicek_Process::simulPath(const int& sizeSample) const
+{
+    //exact solution 
+    //To be implemented
+    return std::vector<double>();
+}
 
+std::vector<double> vasicek_Process::vasicek_Simul_Euler(const int& sizeSample) const
+{
+    //Orstein-Uhlenbeck or a Vasicek trajectory
+// via Euler scheme
+    std::vector<double> B = Simul_Brownien(sizeSample, 0, 1);
+    std::vector<double> X(sizeSample);
+    //B = Simul_Brownien(sizeSample, 0, 1);
+    X[0] = getStart();
+    for (int i = 1; i < sizeSample; i++)
+    {
+        X[i] = X[i - 1] - getSpeed_reversion() * (X[i - 1] - getMean_reversion()) * (1.0 / (sizeSample + 0.0)) + getDiffusion() * (B[i] - B[i - 1]);
+    }
+    return X;
+}
+std::vector<double> vasicek_Process::vasicek_Simul_milstein(const int& sizeSample) const
+{
+    // to be implemented
+    return std::vector<double>();
+}
